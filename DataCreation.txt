@@ -1,7 +1,8 @@
-# organização dos dados
+# Data organization:
 gdalcompare.py /home/felipe/Projetos/Regeneracao/bio15.tif /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013.tif
+# this is to compare and confir if two rasters has the same extent and features...
 
-# Cortando dados de Solos
+# Copping soil data
 
 ##SNDPPT_sd2_M_04_dec_2013
 gdalwarp -multi -dstnodata 9999 /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp -crop_to_cutline  -of GTiff /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA.tif -overwrite
@@ -47,13 +48,13 @@ gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42
 
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/bio12_MA_Albers.tif
 
-## Altimetria
+## DEM
 gdalwarp -dstnodata 9999 /home/felipe/Projetos/Base_dados/Altimetria_aster/DEM2.tif -tr 0.008334491123982725, -0.008332287428821106 -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 -r "bilinear" -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp  -of GTiff /home/felipe/Projetos/Regeneracao/Elevation_MA.tif -overwrite
 																																																																																					
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/Elevation_MA.tif
 
 -# Albers_Conic_Equal_Area
-## Altimetria
+## DEM
 gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/Elevation_MA.tif -of GTiff /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers.tif -overwrite
 																																																																																					
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers.tif
@@ -103,14 +104,15 @@ quit()
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/SlopeDegees_MA_Albers.tif
 
 
-######Dados vetoriais
+###### Analysis with vector layers
+#Distance calculation
 
 # Fragmentos Florestais
 gdal_rasterize -a frag -tr 0.008334491123982725, -0.008332287428821106 -a_nodata 9999 -l FragmentosFlorestais -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 /home/felipe/Projetos/Regeneracao/FragmentosFlorestais.shp -of GTiff /home/felipe/Projetos/Regeneracao/Frags_MA.tif
 
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/Frags_MA.tif
 
-## Gerando distancia
+## Distance analysis
 gdal_proximity.py /home/felipe/Projetos/Regeneracao/Frags_MA.tif -values 1 /home/felipe/Projetos/Regeneracao/DistFrag_MA.tif -of GTiff
 
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/DistFrag_MA.tif
@@ -129,7 +131,7 @@ gdal_rasterize -a estrada -tr 0.008334491123982725, -0.008332287428821106 -a_nod
 
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/Estradas_MA.tif
 
-## Analise proximidade:
+## Distancce analysis:
 gdal_proximity.py /home/felipe/Projetos/Regeneracao/Estradas_MA.tif -values 1 /home/felipe/Projetos/Regeneracao/DistRoads_MA.tif -of GTiff
 
 -# Albers_Conic_Equal_Area
@@ -146,7 +148,7 @@ gdal_rasterize -a rios -tr 0.008334491123982725, -0.008332287428821106 -a_nodata
 
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/Rios_MA.tif
 
-## Analise proximidade:
+## Distance analysis:
 gdal_proximity.py /home/felipe/Projetos/Regeneracao/Rios_MA.tif -values 1 /home/felipe/Projetos/Regeneracao/DistRivers_MA.tif -of GTiff
 
 -# Albers_Conic_Equal_Area
@@ -164,7 +166,7 @@ gdal_rasterize -a rast -tr 0.008334491123982725, -0.008332287428821106 -a_nodata
 
 gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif
 
-## Analise proximidade:
+## Distance analysis:
 gdal_proximity.py /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif -values 1 /home/felipe/Projetos/Regeneracao/DistUrb_MA.tif -of GTiff
 
 -# Albers_Conic_Equal_Area
