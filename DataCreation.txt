@@ -1,178 +1,82 @@
-# Data organization:
-gdalcompare.py /home/felipe/Projetos/Regeneracao/bio15.tif /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013.tif
-# this is to compare and confir if two rasters has the same extent and features...
+1. Elevation (resampled to 200m). The slope, aspect and tpi (3x3 window) variables will be derived from the 200m resolution layer, but no need to precalculate/upload those.
+## DEM
+gdalwarp -multi -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Base_dados/Altimetria_aster/DEM2.tif -te 207808.651 -215730.121 2738749.486 3207527.973 -tr 200, -200 -r "bilinear" -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp  -of GTiff /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif -overwrite
 
-# Copping soil data
+#-1777277.4467912737745792 -429094.3174500754103065 3070522.5532087264582515 4285305.6825499245896935
 
+gdalinfo /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif
+
+2. Soils (1km native resolution)
 ##SNDPPT_sd2_M_04_dec_2013
-gdalwarp -multi -dstnodata 9999 /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp -crop_to_cutline  -of GTiff /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA.tif -overwrite
+gdalwarp -multi -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' -te 207808.651 -215472.027 2738808.651 3207527.973 -tr 1000, -1000 -r "bilinear" /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp -crop_to_cutline -of GTiff /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA_Albers_1km.tif -overwrite
 
-gdalinfo /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA.tif
-
--# Albers_Conic_Equal_Area
-gdalwarp -multi -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp -crop_to_cutline  -of GTiff /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA_Albers.tif -overwrite
-
-gdalinfo /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA_Albers.tif
+gdalinfo /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA_Albers_1km.tif
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA_Albers_1km.tif
 
 ## BLD_sd2_M_04_dec_2013
-gdalwarp -multi -dstnodata 9999 /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp -crop_to_cutline  -of GTiff /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif -overwrite
+gdalwarp -multi -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' -te 207808.651 -215472.027 2738808.651 3207527.973 -tr 1000, -1000 -r "bilinear" /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp -crop_to_cutline  -of GTiff /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers_1km.tif -overwrite
 
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA.tif
+gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers_1km.tif /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA_Albers_1km.tif
+gdalinfo /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers_1km.tif
 
-gdalinfo /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif
-
--# Albers_Conic_Equal_Area
-gdalwarp -multi -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp -crop_to_cutline  -of GTiff /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif -overwrite
-
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/SNDPPT_sd2_M_04_dec_2013_MA_Albers.tif
-
-gdalinfo /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif
-
+3. Climate variables (native resolution - 1km?)
 ## Bio 15
-gdalwarp -dstnodata 9999 /home/felipe/Projetos/Regeneracao/bio15.tif -tr 0.008334491123982725, -0.008332287428821106 -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 -r "bilinear" -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp  -of GTiff /home/felipe/Projetos/Regeneracao/bio15_MA.tif -overwrite
+gdalwarp -multi -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' -te 207808.651 -215472.027 2738808.651 3207527.973 -tr 1000, -1000 -r "bilinear" /home/felipe/Projetos/Regeneracao/bio15.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp  -of GTiff /home/felipe/Projetos/Regeneracao/bio15_MA_Albers_1km.tif -overwrite
 
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/bio15_MA.tif
-
--# Albers_Conic_Equal_Area
-gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/bio15_MA.tif -of GTiff /home/felipe/Projetos/Regeneracao/bio15_MA_Albers.tif -overwrite
-
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/bio15_MA_Albers.tif
+gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers_1km.tif /home/felipe/Projetos/Regeneracao/bio15_MA_Albers_1km.tif
 
 ## Bio 12
-gdalwarp -dstnodata 9999 /home/felipe/Projetos/Regeneracao/bio12.tif -tr 0.008334491123982725, -0.008332287428821106 -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 -r "bilinear" -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp  -of GTiff /home/felipe/Projetos/Regeneracao/bio12_MA.tif -overwrite
+gdalwarp -multi -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' -te 207808.651 -215472.027 2738808.651 3207527.973 -tr 1000, -1000 -r "bilinear"  /home/felipe/Projetos/Regeneracao/bio12.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp  -of GTiff /home/felipe/Projetos/Regeneracao/bio12_MA_Albers_1km.tif -overwrite
 
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/bio12_MA.tif
+gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers_1km.tif /home/felipe/Projetos/Regeneracao/bio12_MA_Albers_1km.tif
 
--# Albers_Conic_Equal_Area
-gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/bio12_MA.tif -of GTiff /home/felipe/Projetos/Regeneracao/bio12_MA_Albers.tif -overwrite
+5. Distance to fragment (200m resolution): calculated at 100m using the "touches" rule to rasterise forest remnant polygons, then resampled to 200m
+# Fragment
+gdal_rasterize -a frag -tr 200, -200 -a_nodata 9999 -l FragmentosFlorestaisAlbers -te 207808.651 -215672.027 2738808.651 3207527.973 /home/felipe/Projetos/Regeneracao/FragmentosFlorestaisAlbers.shp -of GTiff /home/felipe/Projetos/Regeneracao/Frags_MA.tif
 
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/bio12_MA_Albers.tif
-
-## DEM
-gdalwarp -dstnodata 9999 /home/felipe/Projetos/Base_dados/Altimetria_aster/DEM2.tif -tr 0.008334491123982725, -0.008332287428821106 -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 -r "bilinear" -cutline /home/felipe/Projetos/Base_dados/Biomas/MataAtlantica_1148_WGS.shp  -of GTiff /home/felipe/Projetos/Regeneracao/Elevation_MA.tif -overwrite
-																																																																																					
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/Elevation_MA.tif
-
--# Albers_Conic_Equal_Area
-## DEM
-gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/Elevation_MA.tif -of GTiff /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers.tif -overwrite
-																																																																																					
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers.tif
-
-#### Aspect:
-#Done in QGIS using Elevation_MA_Albers and z factor = 1
-#but could be done:
-gdaldem aspect -zero_for_flat /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers.tif /home/felipe/Projetos/Regeneracao/Aspect_MA_Albers.tif
-
-
-R
-library(raster)
-soucre <- raster ("/home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif")
-change <- raster("/home/felipe/Projetos/Regeneracao/Aspect_MA_Albers.tif")
-result <- projectRaster(change, soucre)
-writeRaster(result, "/home/felipe/Projetos/Regeneracao/Aspect_MA_Albers.tif", overwrite=TRUE)
-quit()
-
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/Aspect_MA_Albers.tif
-
-###Topographic Position Index (TPI) 
-gdaldem TPI -compute_edges /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers.tif /home/felipe/Projetos/Regeneracao/TPI_MA_Albers.tif
-
-#gdaldem TPI input_dem output_TPI_map [-compute_edges] [-b Band (default=1)] [-of format] [-q]
-
-R
-library(raster)
-soucre <- raster ("/home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif")
-change <- raster("/home/felipe/Projetos/Regeneracao/TPI_MA_Albers.tif")
-result <- projectRaster(change, soucre)
-writeRaster(result, "/home/felipe/Projetos/Regeneracao/TPI_MA_Albers.tif", overwrite=TRUE)
-quit()
-																																																																																				
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/TPI_MA_Albers.tif
-
-
-### Slope degrees
-gdaldem slope /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers.tif /home/felipe/Projetos/Regeneracao/SlopeDegees_MA_Albers.tif
-R
-library(raster)
-soucre <- raster ("/home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif")
-change <- raster("/home/felipe/Projetos/Regeneracao/SlopeDegees_MA_Albers.tif")
-result <- projectRaster(change, soucre)
-writeRaster(result, "/home/felipe/Projetos/Regeneracao/SlopeDegees_MA_Albers.tif", overwrite=TRUE)
-quit()
-																																																																																				
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/SlopeDegees_MA_Albers.tif
-
-
-###### Analysis with vector layers
-#Distance calculation
-
-# Fragmentos Florestais
-gdal_rasterize -a frag -tr 0.008334491123982725, -0.008332287428821106 -a_nodata 9999 -l FragmentosFlorestais -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 /home/felipe/Projetos/Regeneracao/FragmentosFlorestais.shp -of GTiff /home/felipe/Projetos/Regeneracao/Frags_MA.tif
-
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/Frags_MA.tif
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif /home/felipe/Projetos/Regeneracao/Frags_MA.tif
 
 ## Distance analysis
-gdal_proximity.py /home/felipe/Projetos/Regeneracao/Frags_MA.tif -values 1 /home/felipe/Projetos/Regeneracao/DistFrag_MA.tif -of GTiff
+gdal_proximity.py /home/felipe/Projetos/Regeneracao/Frags_MA.tif -values 1 -distunits GEO /home/felipe/Projetos/Regeneracao/DistFrag_MA_200.tif -of GTiff
 
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/DistFrag_MA.tif
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif /home/felipe/Projetos/Regeneracao/DistFrag_MA_200.tif
 
--# Albers_Conic_Equal_Area
-gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/Frags_MA.tif -of GTiff /home/felipe/Projetos/Regeneracao/Frags_MA_Albers.tif -overwrite
 
-gdal_proximity.py /home/felipe/Projetos/Regeneracao/Frags_MA_Albers.tif -values 1 -distunits GEO /home/felipe/Projetos/Regeneracao/DistFrag_MA_Albers.tif -of GTiff
+6. Distance to river/water: 200m resolution. You all need to decide what water data to include in this calculation.
+# Hidrografy: exporting from PostGIS
+#pgsql2shp -f /home/felipe/psql/regeneracao/hidrografia_ma.shp -h localhost -u postgres -P postgres iis "select r.nome, st_transform(st_intersection(st_transform(r.geom, 4326), b.geom), 102033) as geom from bc250.hid_trecho_drenagem_l as r join biorregioes.ma_1148 as b on ((st_transform(r.geom, 4326) && b.geom) and st_intersects(st_transform(r.geom, 4326) , b.geom))"
+
+gdal_rasterize -a rios -tr 200, -200 -a_nodata 9999 -l hidrografia_ma_Albers -te 207808.651 -215672.027 2738808.651 3207527.973 /home/felipe/psql/regeneracao/hidrografia_ma_Albers.shp -of GTiff /home/felipe/Projetos/Regeneracao/Rios_MA.tif
+
+## Distance analysis:
+gdal_proximity.py /home/felipe/Projetos/Regeneracao/Rios_MA.tif -values 1 -distunits GEO /home/felipe/Projetos/Regeneracao/DistRivers_MA_Albers.tif -of GTiff
 																																																																																					
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/DistFrag_MA_Albers.tif
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Rios_MA.tif /home/felipe/Projetos/Regeneracao/DistRivers_MA_Albers.tif
 
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif /home/felipe/Projetos/Regeneracao/DistRivers_MA_Albers.tif
+
+# Others
 # Rodovia IBGE 1:250.000
-pgsql2shp -f "/home/felipe/psql/regeneracao/rodovias_ma" -h localhost -u postgres -P postgres iis "select r.tipotrechorod, st_intersection(st_transform(r.geom, 4326), b.geom) as geom from bc250.tra_trecho_rodoviario_l as r join biorregioes.ma_1148 as b on ((st_transform(r.geom, 4326) && b.geom) and st_intersects(st_transform(r.geom, 4326) , b.geom))"
+#pgsql2shp -f "/home/felipe/psql/regeneracao/rodovias_ma" -h localhost -u postgres -P postgres iis "select r.tipotrechorod, st_intersection(st_transform(r.geom, 4326), b.geom) as geom from bc250.tra_trecho_rodoviario_l as r join biorregioes.ma_1148 as b on ((st_transform(r.geom, 4326) && b.geom) and st_intersects(st_transform(r.geom, 4326) , b.geom))"
 
-gdal_rasterize -a estrada -tr 0.008334491123982725, -0.008332287428821106 -a_nodata 9999 -l rodovias_ma -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 "/home/felipe/psql/regeneracao/rodovias_ma.shp" -of GTiff /home/felipe/Projetos/Regeneracao/Estradas_MA.tif
-
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/Estradas_MA.tif
+gdal_rasterize -a estrada -tr 200, -200 -a_nodata 9999  -l rodovias_maAlbers -te 207808.651 -215672.027 2738808.651 3207527.973 "/home/felipe/psql/regeneracao/rodovias_maAlbers.shp" -of GTiff /home/felipe/Projetos/Regeneracao/Estradas_MA.tif
 
 ## Distancce analysis:
-gdal_proximity.py /home/felipe/Projetos/Regeneracao/Estradas_MA.tif -values 1 /home/felipe/Projetos/Regeneracao/DistRoads_MA.tif -of GTiff
+gdal_proximity.py /home/felipe/Projetos/Regeneracao/Estradas_MA.tif -values 1 -distunits GEO /home/felipe/Projetos/Regeneracao/DistRoads_MA.tif -of GTiff
 
--# Albers_Conic_Equal_Area
-gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/Estradas_MA.tif -of GTiff /home/felipe/Projetos/Regeneracao/Estradas_MA_Albers.tif -overwrite
-
-gdal_proximity.py /home/felipe/Projetos/Regeneracao/Estradas_MA_Albers.tif -values 1 -distunits GEO /home/felipe/Projetos/Regeneracao/DistRoads_MA_Albers.tif -of GTiff
 																																																																																					
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/DistRoads_MA_Albers.tif
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Estradas_MA.tif /home/felipe/Projetos/Regeneracao/DistRoads_MA.tif
 
-# Hidrografia
-pgsql2shp -f /home/felipe/psql/regeneracao/hidrografia_ma.shp -h localhost -u postgres -P postgres iis "select r.nome, st_intersection(st_transform(r.geom, 4326), b.geom) as geom from bc250.hid_trecho_drenagem_l as r join biorregioes.ma_1148 as b on ((st_transform(r.geom, 4326) && b.geom) and st_intersects(st_transform(r.geom, 4326) , b.geom))"
-
-gdal_rasterize -a rios -tr 0.008334491123982725, -0.008332287428821106 -a_nodata 9999 -l hidrografia_ma -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 /home/felipe/psql/regeneracao/hidrografia_ma.shp -of GTiff /home/felipe/Projetos/Regeneracao/Rios_MA.tif
-
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/Rios_MA.tif
-
-## Distance analysis:
-gdal_proximity.py /home/felipe/Projetos/Regeneracao/Rios_MA.tif -values 1 /home/felipe/Projetos/Regeneracao/DistRivers_MA.tif -of GTiff
-
--# Albers_Conic_Equal_Area
-gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/Rios_MA.tif -of GTiff /home/felipe/Projetos/Regeneracao/Rios_MA_Albers.tif -overwrite
-
-gdal_proximity.py /home/felipe/Projetos/Regeneracao/Rios_MA_Albers.tif -values 1 -distunits GEO /home/felipe/Projetos/Regeneracao/DistRivers_MA_Albers.tif -of GTiff
-																																																																																					
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/DistRivers_MA_Albers.tif
-
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif /home/felipe/Projetos/Regeneracao/DistRoads_MA.tif
 
 # Area Urbana
-pgsql2shp -f "/home/felipe/psql/regeneracao/AreaUrbana_ma" -h localhost -u postgres -P postgres iis "select r.tipo, st_intersects(st_transform(st_makevalid(r.geom), 4326), st_makeValid(b.geom)) as geom from ibge.setores_censitarios as r join biorregioes.ma_1148 as b on ((st_transform(st_makeValid(r.geom), 4326) && st_makeValid(b.geom)) and st_intersects(st_transform(st_makeValid(r.geom), 4326) , st_makeValid(b.geom))) where r.tipo='URBANO'"
+#pgsql2shp -f "/home/felipe/psql/regeneracao/AreaUrbana_ma" -h localhost -u postgres -P postgres iis "select r.tipo, st_intersects(st_transform(st_makevalid(r.geom), 4326), st_makeValid(b.geom)) as geom from ibge.setores_censitarios as r join biorregioes.ma_1148 as b on ((st_transform(st_makeValid(r.geom), 4326) && st_makeValid(b.geom)) and st_intersects(st_transform(st_makeValid(r.geom), 4326) , st_makeValid(b.geom))) where r.tipo='URBANO'"
 
-gdal_rasterize -a rast -tr 0.008334491123982725, -0.008332287428821106 -a_nodata 9999 -l AreaUrbana -te -57.8930144637442936 -33.7548291916874490 -34.8231430325601110 -2.8087136810458619 /home/felipe/psql/regeneracao/AreaUrbana.shp -of GTiff /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif
-
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA.tif /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif
+gdal_rasterize -a rast -tr 200, -200 -a_nodata 9999 -l AreaUrbana_Albers -te 207808.651 -215672.027 2738808.651 3207527.973 /home/felipe/psql/regeneracao/AreaUrbana_Albers.shp -of GTiff /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif
 
 ## Distance analysis:
-gdal_proximity.py /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif -values 1 /home/felipe/Projetos/Regeneracao/DistUrb_MA.tif -of GTiff
+gdal_proximity.py /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif -values 1 -distunits GEO /home/felipe/Projetos/Regeneracao/DistUrb_MA.tif -of GTiff
 
--# Albers_Conic_Equal_Area
-gdalwarp -dstnodata 9999 -s_srs EPSG:4326 -t_srs '+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs' /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif -of GTiff /home/felipe/Projetos/Regeneracao/AreaUrbana_MA_Albers.tif -overwrite
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Estradas_MA.tif /home/felipe/Projetos/Regeneracao/DistUrb_MA.tif
 
-gdal_proximity.py /home/felipe/Projetos/Regeneracao/AreaUrbana_MA_Albers.tif -values 1 -distunits GEO /home/felipe/Projetos/Regeneracao/DistUrb_MA_Albers.tif -of GTiff
-																																																																																					
-gdalcompare.py /home/felipe/Projetos/Regeneracao/BLD_sd2_M_04_dec_2013_MA_Albers.tif /home/felipe/Projetos/Regeneracao/DistUrb_MA_Albers.tif
-
+gdalcompare.py /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif /home/felipe/Projetos/Regeneracao/DistUrb_MA.tif
