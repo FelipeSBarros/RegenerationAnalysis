@@ -80,3 +80,13 @@ gdal_proximity.py /home/felipe/Projetos/Regeneracao/AreaUrbana_MA.tif -values 1 
 gdalcompare.py /home/felipe/Projetos/Regeneracao/Estradas_MA.tif /home/felipe/Projetos/Regeneracao/DistUrb_MA.tif
 
 gdalcompare.py /home/felipe/Projetos/Regeneracao/Elevation_MA_Albers_200.tif /home/felipe/Projetos/Regeneracao/DistUrb_MA.tif
+
+## Organizing data about areas not to be restored
+
+ogr2ogr -f "ESRI Shapefile" -progress /home/felipe/psql/modelagem_priorizacao/NotRestore/TobeRestored_merge3.shp TobeRestored_merge3 -dialect sqlite -sql "SELECT ST_Union(geometry) FROM 'TobeRestored_merge3'"
+
+-# para artigo regeneracao;
+
+gdal_rasterize -burn 1 -init 0 -a_nodata -9999 -tr 200, -200 -te 207808.651 -215672.027 2738808.651 3207527.973 -l NotToRestore_Albers /home/felipe/Projetos/Regeneracao/NotToRestore_Albers.shp /home/felipe/Projetos/Regeneracao/NotRestorable.tif
+
+gdalwarp -multi -dstnodata -9999 -te 207808.651 -215472.027 2738808.651 3207527.973 -tr 200, -200 /home/felipe/Projetos/Regeneracao/NotRestorable.tif -cutline /home/felipe/Projetos/Base_dados/Biomas/Bioma_MA_1148_Albers.shp  -of GTiff /home/felipe/Projetos/Regeneracao/NotRestorable_AF.tif -overwrite
